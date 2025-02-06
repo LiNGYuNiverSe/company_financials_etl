@@ -17,21 +17,24 @@ def get_financial_statements(ticker:str) -> pd.DataFrame:
     Returns:    
         pd.DataFrame: Financial statements of the stock.
     """
-
-    print(f"Extracting financial statements for {ticker}...")
-
-    stock = yf.Ticker(ticker)
-
-    income_statement = stock.financials
-    balance_sheet = stock.balance_sheet
-    cashflow_statement = stock.cashflow
-    print(f"Extracted financial statements for {ticker}")
-
-    return {
-        "income_statement": income_statement,
-        "balance_sheet": balance_sheet,
-        "cashflow_statement": cashflow_statement
-    }
+    try:
+        logging.info(f"Fetching financial statements for {ticker}" )
+        stock = yf.Ticker(ticker)
+        financials = {
+            "income_statement": stock.financials,
+            "balance_sheet": stock.balance_sheet,
+            "cashflow_statement": stock.cashflow
+        }
+        if any(df.empty for df in financials.values()):
+            logging.warning(f"Financial statements for {ticker} are empty.")
+            return None
+        
+        logging.info(f"Successfully extracted financial statements for {ticker}.")
+        return financials
+    
+    except requests.exceptions.HTTPError as e:
+        logging.error(f"HTTP error occurred: {e}")
+        return None
 
 
 

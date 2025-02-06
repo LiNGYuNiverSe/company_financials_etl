@@ -1,0 +1,1 @@
+This is a work sample of an ETL pipeline that pulls, analyzes and stores financial statements data from API to Google Bigquery.
